@@ -25,6 +25,7 @@ it at the platform level, modify your `manifest.yaml` to include the following
 attributes:
 
 > [REALM] needs to be replaced with your SignalFx realm 
+
 > [ACCESS TOKEN] needs to be replaced with your SignalFx access token
 
 ```yaml
@@ -36,7 +37,7 @@ applications:
   ...
   env:
     ...
-	OTEL_EXPORTER_JAEGER_SERVICE_NAME: my-java-app
+    OTEL_EXPORTER_JAEGER_SERVICE_NAME: my-java-app
     OTEL_EXPORTER_JAEGER_ENDPOINT: https://ingest.[REALM].signalfx.com/v1/trace
     OTEL_RESOURCE_ATTRIBUTES: environment=nonprod
     SIGNALFX_AUTH_TOKEN: [ACCESS TOKEN]
