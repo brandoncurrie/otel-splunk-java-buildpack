@@ -3,36 +3,49 @@
 A [CloudFoundry buildpack](https://docs.run.pivotal.io/buildpacks/) to install
 and run the Splunk distribution of the OpenTelemetry Java Instrumentation agent in CloudFoundry apps.
 
-> :construction: This project is currently in **BETA**.
+This repository is a clone of the core [Splunk distribution of OpenTelemetry 
+Java Instrumentation Buildpack](https://github.com/signalfx/splunk-otel-java/tree/main/deployments/cloudfoundry/buildpack). 
+
+> Its recommended you use the core distribution if you're able to install a 
+buildpack on your Cloud Foundry environment using 
+
+```sh
+$ cf create-buildpack ...
+```
+
+For some organizations, this privilege is restricted to platform owners and 
+creating a new buildpack requires approval.  For the sake of POC, this repository
+has been created to allow for a direct reference of the build pack in the 
+manifest. 
 
 ## Installation
 
-To build and install the buildpack without using the tile you need to have
-[cfcli](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) installed.
+To use the Splunk OpenTelemetry Java Instrumentation Buildpack without installing
+it at the platform level, modify your `manifest.yaml` to include the following
+attributes:
 
-If you would like to install the buildpack, clone this repo, change to this directory, then run:
+> [REALM] needs to be replaced with your SignalFx realm 
+> [ACCESS TOKEN] needs to be replaced with your SignalFx access token
 
-```sh
-$ ./build.sh
-
-# installs the buildpack on CloudFoundry
-$ cf create-buildpack splunk_otel_java_buildpack splunk_otel_java_buildpack-linux.zip 99 --enable
-```
-
-Now you can use the buildpack when running your apps:
-
-```sh
-# app configuration
-$ cf set-env my-app OTEL_ZIPKIN_SERVICE_NAME <application name>
-# ...
-
-# java_buildpack is the main buildpack for JVM apps, it needs to be the final one
-$ cf push my-app -b splunk_otel_java_buildpack -b https://github.com/cloudfoundry/java-buildpack
+```yaml
+applications:
+- name: my-java-app
+  buildpacks: 
+   - https://github.com/signalfx/splunk-otel-java/tree/main/deployments/cloudfoundry/buildpack
+   - java_buildpack_offline
+  ...
+  env:
+    ...
+	OTEL_EXPORTER_JAEGER_SERVICE_NAME: my-java-app
+    OTEL_EXPORTER_JAEGER_ENDPOINT: https://ingest.[REALM].signalfx.com/v1/trace
+    OTEL_RESOURCE_ATTRIBUTES: environment=nonprod
+    SIGNALFX_AUTH_TOKEN: [ACCESS TOKEN]
 ```
 
 ## Configuration
 
-You can configure the Java instrumentation agent using environment variables listed in the [main README.md](../../../README.md).
+You can configure the Java instrumentation agent using environment variables 
+listed in the [main README.md](../../../README.md).
 All configuration options listed there are supported by this buildpack.
 
 If you want to use a specific version of the Java agent in your application, you can set the `SPLUNK_OTEL_JAVA_VERSION`
